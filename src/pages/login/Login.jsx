@@ -15,9 +15,33 @@ const Login = () => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
 
+
+  const login = async (member) => {
+    const response = await fetch("http://localhost:10000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type" : "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify(member)
+    })
+    
+    return response.json()
+  }
+  
+  const loginMutation = useMutation({
+    mutationFn: login,
+    onSuccess: (res) => { 
+      console.log(res)
+    },
+    onError: (error) => {
+      console.log(error)
+    }
+    })
+
   const onSubmit = (formData) => {
-    const { memberPasswordConfirm, ...member } = formData;
     // 데이터 요청(react query)
+    loginMutation.mutate(formData)
   };
 
   return (

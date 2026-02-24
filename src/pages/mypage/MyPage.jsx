@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/useAuthStore";
 
 const MyPage = () => {
-  const { setIsAuthenticated } = useAuthStore();
+  const { member, setIsAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
   const logout = async () => {
@@ -38,6 +38,7 @@ const MyPage = () => {
   return (
     <div>
       마이페이지
+      <p>{member.name}님 환영합니다.</p>
       <button onClick={handleLogoutOnClick}>로그아웃</button>
     </div>
   );

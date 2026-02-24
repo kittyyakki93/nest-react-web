@@ -3,6 +3,7 @@ import Main from "../pages/main/Main";
 import Login from "../pages/login/Login";
 import Profile from "../pages/profile/Profile";
 import Join01 from "../pages/join/Join01";
+import MyPage from "../pages/mypage/MyPage";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile />,
+  },
+  {
+    path: "/my-page",
+    element: <MyPage />,
   },
 ]);
 

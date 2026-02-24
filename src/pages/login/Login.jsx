@@ -2,8 +2,16 @@ import React from "react";
 import S from "./style";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import useAuthStore from "../../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+
+
+  const { setIsAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
+
+
   const {
     register,
     handleSubmit,
@@ -32,10 +40,14 @@ const Login = () => {
   const loginMutation = useMutation({
     mutationFn: login,
     onSuccess: (res) => { 
+      //로그인 성공
+      setIsAuthenticated(true);
+      navigate("/my-page", { replace:true })
       console.log(res)
     },
     onError: (error) => {
       console.log(error)
+      setIsAuthenticated(false);
     }
     })
 

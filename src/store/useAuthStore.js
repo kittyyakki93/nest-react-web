@@ -1,27 +1,23 @@
 import { create } from "zustand";
-import {persist} from "zustand/"
-import { combine } from "zustand/middleware";
-
+import { combine, persist } from "zustand/middleware";
 
 const useAuthStore = create(
   persist(
     combine(
       {
         member: null,
-        isAuthenticated:false,
+        isAuthenticated: false,
       },
       (set) => ({
-        setIsAuthenticated: (status) => set({ setIsAuthenticated: status }),
-        setMember: (member) => set({member})
+        setIsAuthenticated: (status) => set({ isAuthenticated: status }),
+        setMember: (member) => set({ member }),
       })
     ),
     {
       name: "auth-storage",
-      partialize: (state) => ({
-        
-      })
+      partialize: (state) => ({}),
     }
   )
-)
+);
 
 export default useAuthStore;

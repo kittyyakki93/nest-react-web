@@ -4,6 +4,7 @@ import Login from "../pages/login/Login";
 import Profile from "../pages/profile/Profile";
 import Join01 from "../pages/join/Join01";
 import MyPage from "../pages/mypage/MyPage";
+import AuthLayout from "../pages/layout/AuthLayout";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,16 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    element: <AuthLayout />,
+    children:
+    [
+      {
+        path: "/my-page",
+        element: <MyPage />
+      }
+    ]
   },
   {
     path: "/profile",

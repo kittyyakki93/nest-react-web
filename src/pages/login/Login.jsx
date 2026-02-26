@@ -3,14 +3,11 @@ import S from "./style";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import useAuthStore from "../../store/useAuthStore";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
-
-
   const { setIsAuthenticated } = useAuthStore();
   const navigate = useNavigate();
-
 
   const {
     register,
@@ -23,37 +20,49 @@ const Login = () => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[!@#])[\da-zA-Z!@#]{8,}$/;
 
-
   const login = async (member) => {
     const response = await fetch("http://localhost:10000/auth/login", {
       method: "POST",
       headers: {
-        "Content-Type" : "application/json"
+        "Content-Type": "application/json",
       },
-      // credentials: "include",
-      body: JSON.stringify(member)
-    })
+      credentials: "include", // 쿠키를 주고받을수 있게 해 줌 (쿠키 허용)
+      body: JSON.stringify(member),
+    });
 
-    return response.json()
-  }
-  
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ message: "서버 에러가 발생했습니다." }));
+      console.error("로그인 에러:", {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+      });
+      throw new Error(errorData.message || `서버 에러: ${response.status}`);
+    }
+
+    return response.json();
+  };
+
   const loginMutation = useMutation({
     mutationFn: login,
-    onSuccess: (res) => { 
-      //로그인 성공
+    onSuccess: (res) => {
+      // 로그인 성공
       setIsAuthenticated(true);
-      navigate("/my-page", { replace:true })
-      console.log(res)
+      navigate("/my-page", { replace: true });
+      console.log("로그인 성공:", res);
     },
     onError: (error) => {
-      console.log(error)
       setIsAuthenticated(false);
-    }
-    })
+      console.error("로그인 실패:", error);
+      alert(error.message || "로그인에 실패했습니다.");
+    },
+  });
 
   const onSubmit = (formData) => {
     // 데이터 요청(react query)
-    loginMutation.mutate(formData)
+    loginMutation.mutate(formData);
   };
 
   return (
@@ -101,6 +110,12 @@ const Login = () => {
       </S.Label>
 
       <button disabled={isSubmitting}>로그인</button>
+      <br />
+      <Link to="http://localhost:10000/auth/google">구글 로그인</Link>
+      <br />
+      <Link to="http://localhost:10000/auth/kakao">카카오 로그인</Link>
+      <br />
+      <Link to="http://localhost:10000/auth/naver">네이버 로그인</Link>
     </S.Form>
   );
 };

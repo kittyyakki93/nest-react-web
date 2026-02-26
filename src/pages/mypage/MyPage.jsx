@@ -13,7 +13,7 @@ const MyPage = () => {
       {
         method: "POST",
         // 인증이 필요한 모든 요청에는 cookies의 토큰을 같이 보내야 한다.
-        credential: "include",
+        credentials: "include",
       }
     );
 
@@ -38,7 +38,7 @@ const MyPage = () => {
   return (
     <div>
       마이페이지
-      <p>{member.name}님 환영합니다.</p>
+      <p>{member?.name}님 환영합니다.</p>
       <button onClick={handleLogoutOnClick}>로그아웃</button>
     </div>
   );

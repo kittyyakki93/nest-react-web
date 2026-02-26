@@ -1,46 +1,57 @@
-import { useMutation } from "@tanstack/react-query";
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 import useAuthStore from "../../store/useAuthStore";
 
-const MyPage = () => {
-  const { member, setIsAuthenticated } = useAuthStore();
-  const navigate = useNavigate();
+const Main = () => {
+  // 최초 한 번 프로필 요청
+  const { setMember, setIsAuthenticated } = useAuthStore();
 
-  const logout = async () => {
-    const response = await fetch(`http://localhost:10000/auth/logout`, {
-      method: "POST",
-      // ※인증이 필요한 모든 요청에는 Cookie의 토큰을 같이 보내야한다.※,
-      credentials: "include",
-    });
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const response = await fetch("http://localhost:10000/auth/me", {
+          credentials: "include",
+        });
 
-    if (!response.ok) throw new Error("Logout Error");
-    return await response.json();
-  };
+        if (!response.ok) throw new Error("Access Token expired");
+        const { data } = await response.json();
+        setMember(data);
+        setIsAuthenticated(true);
 
-  const logoutMutation = useMutation({
-    mutationFn: logout,
-    onSuccess: (res) => {
-      console.log("로그아웃 성공");
-      setIsAuthenticated(false);
-      navigate("/", { replace: true });
-    },
-    onError: (err) => {
-      console.log(err);
-    },
-  });
+        console.log("실행", data);
+      } catch (err) {
+        // Access Token 만료 -> Refresh Token으로 Access Token의 재발급 시도
+        try {
+          const refreshResponse = await fetch(
+            "http://localhost:10000/auth/refresh",
+            {
+              method: "POST",
+              credentials: "include",
+            }
+          );
 
-  const handleLogoutOnClick = () => {
-    logoutMutation.mutate();
-  };
+          if (!refreshResponse.ok) throw new Error("Refresh Token expired");
 
-  return (
-    <div>
-      마이페이지😎
-      <p>{member?.memberName}님 환영합니다</p>
-      <button onClick={handleLogoutOnClick}>로그아웃</button>
-    </div>
-  );
+          // 재발급 성공 -> 다시 내 정보를 요청
+          const response = await fetch("http://localhost:10000/auth/me", {
+            credentials: "include",
+          });
+
+          if (!response.ok) throw new Error("me failed");
+          const { data } = await response.json();
+          setMember(data);
+          setIsAuthenticated(true);
+        } catch (err) {
+          // fresh 실패 -> 완전 로그아웃
+          setMember(null);
+          setIsAuthenticated(false);
+        }
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
+  return <div>메인페이지😎</div>;
 };
 
-export default MyPage;
+export default Main;

@@ -6,36 +6,41 @@ import MyPage from "../pages/mypage/MyPage";
 import AuthLayout from "../pages/layout/AuthLayout";
 import Join01 from "../pages/join/Join01";
 import InitializeAuthLayout from "../pages/layout/InitializeAuthLayout";
+import ChatLayout from "../pages/chat/ChatLayout";
 
 const router = createBrowserRouter([
   // {
   //   element: <InitializeAuthLayout />,
   //   children: [
+  {
+    path: "/",
+    element: <Main />,
+  },
+  {
+    path: "/join",
+    element: <Join01 />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "/chat",
+    element: <ChatLayout />,
+  },
+  {
+    element: <AuthLayout />, // 로그인이 필요한 페이지
+    children: [
       {
-        path: "/",
-        element: <Main />,
+        path: "/my-page",
+        element: <MyPage />,
       },
-      {
-        path: "/join",
-        element: <Join01 />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
-        element: <AuthLayout />, // 로그인이 필요한 페이지
-        children: [
-          {
-            path: "/my-page",
-            element: <MyPage />,
-          },
-        ],
-      },
+    ],
+  },
   //   ],
   // },
 ]);

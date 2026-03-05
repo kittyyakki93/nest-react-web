@@ -6,20 +6,27 @@ const ChatBot02 = () => {
 
   const handleQuestionOnChange = (e) => setQuestion(e.target.value);
   const asking = async () => {
+
     // 백엔드 NEST
     console.log(question);
-    const response = await fetch("http://localhost:10000/openai/question", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        question: question,
-      }),
-    });
+    const response = await fetch(
+      "http://localhost:10000/openai/stream-question",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: question,
+        }),
+      }
+    );
+    const reader = response.body.getReader();
+    const ddecoder = new TextDecoder();
 
-    const datas = await response.json()
-    setResult(datas.data)
+    let result = ""
+
+    while(true){}
   };
 
   return (

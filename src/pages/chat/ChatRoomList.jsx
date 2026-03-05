@@ -110,6 +110,8 @@ const ChatRoomList = ({ selectedRoomId, onSelectRoom, onDeleteRoom }) => {
   };
 
   const handleDeleteRoom = (roomId) => {
+    // fetch 삭제
+
     setChatRooms((prev) => prev.filter((room) => room.roomId !== roomId));
     onDeleteRoom?.(roomId);
   };

@@ -12,10 +12,10 @@ const ChatWindow = ({ myStringId, partner, onLeaveRoom }) => {
   const partnerId = String(partner?.id);
 
   // 1. 유저의 상세 정보 가져오기
-  useEffect(async () => {
+  useEffect(() => {
     if (!partnerId) return;
 
-    await fetch(`http://localhost:10000/members/${partnerId}`)
+    fetch(`http://localhost:10000/members/${partnerId}`)
       .then((res) => res.json())
       .then(({ data }) => {
         setPartnerDeatil(data);
@@ -26,22 +26,26 @@ const ChatWindow = ({ myStringId, partner, onLeaveRoom }) => {
   }, [partnerId]);
 
   // 2. 메시지 내역 로드 및 리스너
-  useEffect(async() => {
+  useEffect(() => {
     if (!partnerId || !myId) return;
 
-    await fetch(`http://localhost:10000/chat/messages/${myId}/${partnerId}`)
+    fetch(`http://localhost:10000/chat/messages/${myId}/${partnerId}`)
       .then((res) => res.json())
       .then((data) => setMessageList(Array.isArray(data) ? data : []))
-      .catch(() => setMessageList([]))
-    
-    const handleRecieve = (message) => {
-      if (String(message.fromId) === myId) return;//중복방지
-      const isMyChat = (String(message.fromId) === partnerId && String(message.toId) === myId) || (String(message.fromId) === myId && String(message.toId) === partnerId)
+      .catch(() => setMessageList([]));
 
-      if(isMyChat) setMessageList(prev =>[...prev, message])
-    }
-    socket.on("privateMessage", handleRecieve)
-    return () => socket.off("privateMessage", handleRecieve)
+    const handleRecive = (message) => {
+      if (String(message.fromId) === myId) return; // 중복 방지
+      const isMyChat =
+        (String(message.fromId) === partnerId &&
+          String(message.toId) === myId) ||
+        (String(message.fromId) === myId && String(message.toId) === partnerId);
+
+      if (isMyChat) setMessageList((prev) => [...prev, message]);
+    };
+
+    socket.on("privateMessage", handleRecive);
+    return () => socket.off("privateMessage", handleRecive);
   }, [myId, partnerId]);
 
   const send = () => {
@@ -49,18 +53,19 @@ const ChatWindow = ({ myStringId, partner, onLeaveRoom }) => {
     const payload = {
       fromId: myId,
       toId: partnerId,
-      content: userInput
-    }
+      content: userInput,
+    };
 
-    socket.emit("privateMessage", payload)
-    setMessageList(prev => [...prev, payload])
-    setUserInput("")
-   };
-  
+    socket.emit("privateMessage", payload);
+    setMessageList((prev) => [...prev, payload]);
+    setUserInput("");
+  };
+
   // 스크롤 처리
   useEffect(() => {
-    if (scrollBottomRef.current) scrollBottomRef.current.scrollTop = scrollBottomRef.current.scrollHeight;
-  },[messageList])
+    if (scrollBottomRef.current)
+      scrollBottomRef.current.scrollTop = scrollBottomRef.current.scrollHeight;
+  }, [messageList]);
 
   return (
     <S.Wrapper>
@@ -92,8 +97,8 @@ const ChatWindow = ({ myStringId, partner, onLeaveRoom }) => {
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              send()
+            if (e.key === "Enter") {
+              send();
             }
           }}
           placeholder="메세지를 입력하세요."

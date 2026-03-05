@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import useAuthStore from '../../store/useAuthStore';
-import ChatWindow from './ChatWindow';
-import S from './style';
-import ChatRoomList from './ChatRoomList';
+import React, { useState } from "react";
+import useAuthStore from "../../store/useAuthStore";
+import S from "./style";
+import ChatRoomList from "./ChatRoomList";
+import ChatWindow from "./ChatWindow";
 
 const ChatLayout = () => {
-  const { member } = useAuthStore()
+  const { member } = useAuthStore();
   const myId = member?.id;
-  const [selectedPartner, setSelectedPartner] = useState(null); //객체
-
-
+  const [selectedPartner, setSelectedPartner] = useState(null); // 객체
 
   return (
     <S.LayoutWrapper>
@@ -29,9 +27,7 @@ const ChatLayout = () => {
           <ChatWindow
             myStringId={myId}
             partner={selectedPartner}
-            onLeaveRoom={() => {
-              setSelectedPartner(null);
-            }}
+            onLeaveRoom={() => setSelectedPartner(null)}
           />
         ) : (
           <S.EmptyState>

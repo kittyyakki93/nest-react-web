@@ -34,9 +34,31 @@ const ChatRoomList = ({ selectedRoomId, onSelectRoom, onDeleteRoom }) => {
       });
 
     //2. 실시간 목록 갱신 리스너
+    const updateChatList = (message) => {
+      const fromId = String(message.fromId)
+      const toId = String(message.toId)
+      const partnerId = fromId === myId ? toId : fromId;
 
-    //3. 새로운 채팅 시작(검색)
-    return () => socket.off("privateMessage");
+      setChatRooms((prev) => {
+        const exists = prev.find(room => room.roomId === partnerId)
+        if (exists) {
+          return prev.map((room) => (
+            room.roomId === partnerId ? {...room, lastMessage: message.content, lastUpdated: new Date()} : room
+          ))
+        } else {
+          // 새 채팅방 리스트가 생길 때
+          return [{
+            roomId: partnerId,
+            memberEmail: partnerId === myId ? myEmail : "새 대화",
+            lastMessage: message.content,
+            lastUpdated: new Date()
+          }, ...prev]
+        }
+      })
+    }
+
+    socket.on("privateMessage", updateChatList)
+    return () => socket.off("privateMessage", updateChatList)
   }, [myEmail, myId]);
 
   //3. 새로운 채팅 시작(검색)

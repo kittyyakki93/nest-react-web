@@ -27,8 +27,8 @@ const ChatLayout = () => {
       <S.MainContent>
         {selectedPartner ? (
           <ChatWindow
-            myId={myId}
-            partber={selectedPartner}
+            myStringId={myId}
+            partner={selectedPartner}
             onLeaveRoom={() => {
               setSelectedPartner(null);
             }}

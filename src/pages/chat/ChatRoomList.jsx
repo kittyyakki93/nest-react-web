@@ -94,7 +94,7 @@ const ChatRoomList = ({ selectedRoomId, onSelectRoom, onDeleteRoom }) => {
                 $isSelected= { selectedStringId === room.roomId}
               >
                 <S.RoomHeader>
-                  <strong>{room.room === myID ? "나와의 채팅" : (room.memberEmail || room.roomId)}</strong>
+                  <strong>{room.room === myId ? "나와의 채팅" : (room.memberEmail || room.roomId)}</strong>
                   <S.DeleteButton onClick={(e) => {
                     e.stopPropagation();
                     onDeleteRoom(room.roomId)

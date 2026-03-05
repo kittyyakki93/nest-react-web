@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import S from "./style";
+import { socket } from "../../util/socket";
 
 const ChatWindow = ({ myStringId, partner, onLeaveRoom }) => {
   const [messageList, setMessageList] = useState([]);
@@ -25,9 +26,41 @@ const ChatWindow = ({ myStringId, partner, onLeaveRoom }) => {
   }, [partnerId]);
 
   // 2. 메시지 내역 로드 및 리스너
-  useEffect(() => {}, [myId, partnerId]);
+  useEffect(async() => {
+    if (!partnerId || !myId) return;
 
-  const send = () => {};
+    await fetch(`http://localhost:10000/chat/messages/${myId}/${partnerId}`)
+      .then((res) => res.json())
+      .then((data) => setMessageList(Array.isArray(data) ? data : []))
+      .catch(() => setMessageList([]))
+    
+    const handleRecieve = (message) => {
+      if (String(message.fromId) === myId) return;//중복방지
+      const isMyChat = (String(message.fromId) === partnerId && String(message.toId) === myId) || (String(message.fromId) === myId && String(message.toId) === partnerId)
+
+      if(isMyChat) setMessageList(prev =>[...prev, message])
+    }
+    socket.on("privateMessage", handleRecieve)
+    return () => socket.off("privateMessage", handleRecieve)
+  }, [myId, partnerId]);
+
+  const send = () => {
+    if (!userInput.trim()) return;
+    const payload = {
+      fromId: myId,
+      toId: partnerId,
+      content: userInput
+    }
+
+    socket.emit("privateMessage", payload)
+    setMessageList(prev => [...prev, payload])
+    setUserInput("")
+   };
+  
+  // 스크롤 처리
+  useEffect(() => {
+    if (scrollBottomRef.current) scrollBottomRef.current.scrollTop = scrollBottomRef.current.scrollHeight;
+  },[messageList])
 
   return (
     <S.Wrapper>
@@ -54,7 +87,19 @@ const ChatWindow = ({ myStringId, partner, onLeaveRoom }) => {
         ))}
       </S.MessageArea>
 
-      <S.InputArea></S.InputArea>
+      <S.InputArea>
+        <S.Input
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              send()
+            }
+          }}
+          placeholder="메세지를 입력하세요."
+        />
+        <button onClick={send}>전송</button>
+      </S.InputArea>
     </S.Wrapper>
   );
 };

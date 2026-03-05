@@ -78,7 +78,33 @@ const ChatRoomList = ({ selectedRoomId, onSelectRoom, onDeleteRoom }) => {
         <S.SearchInput value={inputEmail} onChange={(e) => setInputEmail(e.target.value)} placeholder='이메일 검색' />
         <S.SearchButton onClick={startNewChat}>채팅 시작</S.SearchButton>
       </S.SearchArea>
-      
+      <S.ListContainer>
+        {
+          chatRooms
+            .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated))
+            .map((room) => (
+              <S.RoomItem
+                key={room.roomId}
+                onClick={() => onSelectRoom({
+                  id: room.roomId,
+                  memberEmail: room.member,
+                  memberName: room.memberMemberName,
+                  memberProfile: room.memberProfile
+                })}
+                $isSelected= { selectedStringId === room.roomId}
+              >
+                <S.RoomHeader>
+                  <strong>{room.room === myID ? "나와의 채팅" : (room.memberEmail || room.roomId)}</strong>
+                  <S.DeleteButton onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteRoom(room.roomId)
+                  }}>삭제</S.DeleteButton>
+                </S.RoomHeader>
+                <S.LastMessage>{room.lastMessage || "메세지가 없습니다."}</S.LastMessage>
+              </S.RoomItem>
+            ))
+        }
+      </S.ListContainer>
     </S.Wrapper>
   );
 };

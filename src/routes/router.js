@@ -7,6 +7,7 @@ import AuthLayout from "../pages/layout/AuthLayout";
 import Join01 from "../pages/join/Join01";
 import InitializeAuthLayout from "../pages/layout/InitializeAuthLayout";
 import ChatLayout from "../pages/chat/ChatLayout";
+import ChatBot01 from "../pages/chatbot/ChatBot01";
 
 const router = createBrowserRouter([
   // {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: "/chat",
     element: <ChatLayout />,
+  },
+  {
+    path: "/chatbot-01",
+    element: <ChatBot01 />,
   },
   {
     element: <AuthLayout />, // 로그인이 필요한 페이지

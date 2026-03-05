@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-const ChatBot02 = () => {
+const ChatBot03 = () => {
   const [result, setResult] = useState("");
   const [question, setQuestion] = useState("");
 
   const handleQuestionOnChange = (e) => setQuestion(e.target.value);
   const asking = async () => {
     const response = await fetch(
-      "http://localhost:10000/openai/stream-question",
+      "http://localhost:10000/openai/role-question",
       {
         method: "POST",
         headers: {
@@ -48,4 +48,4 @@ const ChatBot02 = () => {
   );
 };
 
-export default ChatBot02;
+export default ChatBot03;
